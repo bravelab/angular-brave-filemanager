@@ -1,9 +1,9 @@
 {
-  "name": "angular-filemanager",
+  "name": "angular-brave-filemanager",
   "version": "1.5.1",
-  "homepage": "https://github.com/joni2back/angular-filemanager",
+  "homepage": "http://bitbucket.org:sizeof/angular-brave-filemanager.git#readme",
   "authors": [
-    "Jonas Sciangula Street <joni2back@gmail.com>"
+    "Nikodem Kler"
   ],
   "description": "A very smart filemanager to manage your files in the browser.",
   "main": "js/app.js",

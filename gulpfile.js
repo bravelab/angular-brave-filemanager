@@ -14,7 +14,7 @@ var path = require('path');
 var src = 'src/';
 var dst = 'dist/';
 var tplPath = 'src/templates'; //must be same as fileManagerConfig.tplPath
-var jsFile = 'angular-filemanager.min.js';
+var jsFile = 'angular-filemanager.js';
 var cssFile = 'angular-filemanager.min.css';
 
 gulp.task('clean', function (cb) {
@@ -39,7 +39,7 @@ gulp.task('concat-uglify-js', ['cache-templates'], function() {
       dst + '/' + jsFile
     ])
     .pipe(concat(jsFile))
-    .pipe(uglify())
+    // .pipe(uglify())
     .pipe(gulp.dest(dst));
 });
 
