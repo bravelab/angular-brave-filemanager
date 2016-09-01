@@ -3,9 +3,11 @@
     angular.module('FileManagerApp').controller('ModalFileManagerCtrl', 
         ['$scope', '$rootScope', 'fileNavigator', function($scope, $rootScope, FileNavigator) {
 
+        $scope.config = $scope.$parent.$parent.config;
+
         $scope.reverse = false;
         $scope.predicate = ['model.type', 'model.name'];
-        $scope.fileNavigator = new FileNavigator();
+        $scope.fileNavigator = new FileNavigator($scope.config);
         $rootScope.selectedModalPath = [];
 
         $scope.order = function(predicate) {

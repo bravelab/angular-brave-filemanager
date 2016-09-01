@@ -5,7 +5,8 @@
         function($scope, $rootScope, $window, $translate, fileManagerConfig, Item, FileNavigator, ApiMiddleware) {
 
         var $storage = $window.localStorage;
-        $scope.config = fileManagerConfig;
+        $scope.config = angular.merge(fileManagerConfig, $scope.$parent.config);
+
         $scope.reverse = false;
         $scope.predicate = ['model.type', 'model.name'];        
         $scope.order = function(predicate) {
@@ -13,8 +14,8 @@
             $scope.predicate[1] = predicate;
         };
         $scope.query = '';
-        $scope.fileNavigator = new FileNavigator();
-        $scope.apiMiddleware = new ApiMiddleware();
+        $scope.fileNavigator = new FileNavigator($scope.config);
+        $scope.apiMiddleware = new ApiMiddleware($scope.config);
         $scope.uploadFileList = [];
         $scope.viewTemplate = $storage.getItem('viewTemplate') || 'main-icons.html';
         $scope.fileList = [];
@@ -24,7 +25,7 @@
             if ($scope.singleSelection()) {
                 $scope.temp = $scope.singleSelection();
             } else {
-                $scope.temp = new Item({rights: 644});
+                $scope.temp = new Item({rights: 644}, null, $scope.config);
                 $scope.temp.multiple = true;
             }
             $scope.temp.revert();
@@ -46,7 +47,7 @@
                 $storage.setItem('language', locale);
                 return $translate.use(locale);
             }
-            $translate.use($storage.getItem('language') || fileManagerConfig.defaultLang);
+            $translate.use($storage.getItem('language') || $scope.config.defaultLang);
         };
 
         $scope.isSelected = function(item) {
@@ -113,7 +114,7 @@
         };
 
         $scope.prepareNewFolder = function() {
-            var item = new Item(null, $scope.fileNavigator.currentPath);
+            var item = new Item(null, $scope.fileNavigator.currentPath, $scope.config);
             $scope.temps = [item];
             return item;
         };
@@ -329,6 +330,7 @@
         };
 
         $scope.uploadFiles = function() {
+            console.log($scope.fileNavigator.currentPath);
             $scope.apiMiddleware.upload($scope.uploadFileList, $scope.fileNavigator.currentPath).then(function() {
                 $scope.fileNavigator.refresh();
                 $scope.uploadFileList = [];
@@ -344,7 +346,6 @@
             var selectedItemsPath = item && item.model.path.join('');
             return selectedItemsPath === selectedPath;
         };
-
         var getQueryParam = function(param) {
             var found = $window.location.search.substr(1).split('&').filter(function(item) {
                 return param ===  item.split('=')[0];

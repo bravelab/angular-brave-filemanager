@@ -14,8 +14,16 @@ var path = require('path');
 var src = 'src/';
 var dst = 'dist/';
 var tplPath = 'src/templates'; //must be same as fileManagerConfig.tplPath
-var jsFile = 'angular-filemanager.js';
+
+var jsFileUgly  = 'angular-filemanager.min.js';
+var jsFileRaw   = 'angular-filemanager.js';
+
 var cssFile = 'angular-filemanager.min.css';
+var config = {
+    lint: {
+        src: ['src/**/*.js', 'test/**/*.spec.js']
+    }
+};
 
 gulp.task('clean', function (cb) {
   del(dst + '/*', cb);
@@ -23,7 +31,7 @@ gulp.task('clean', function (cb) {
 
 gulp.task('cache-templates', function () {
   return gulp.src(tplPath + '/*.html')
-    .pipe(templateCache(jsFile, {
+    .pipe(templateCache(jsFileUgly, {
       module: 'FileManagerApp',
       base: function(file) {
         return tplPath + '/' + path.basename(file.history);
@@ -36,10 +44,19 @@ gulp.task('concat-uglify-js', ['cache-templates'], function() {
   return gulp.src([
     src + 'js/app.js',
       src + 'js/*/*.js',
-      dst + '/' + jsFile
+      dst + '/' + jsFileUgly
     ])
-    .pipe(concat(jsFile))
-    // .pipe(uglify())
+    .pipe(concat(jsFileUgly))
+    .pipe(uglify())
+    .pipe(gulp.dest(dst));
+});
+
+gulp.task('concat-js', function() {
+  return gulp.src([
+    src + 'js/app.js',
+      src + 'js/*/*.js'
+    ])
+    .pipe(concat(jsFileRaw))
     .pipe(gulp.dest(dst));
 });
 
@@ -55,7 +72,8 @@ gulp.task('lint', function () {
     .pipe(eslint({
       'rules': {
           'quotes': [2, 'single'], 
-          //'linebreak-style': [2, 'unix'],
+          // 'linebreak-style': [2, 'unix'],
+          'no-console': 0,
           'semi': [2, 'always']
       },
       'env': {
@@ -71,5 +89,10 @@ gulp.task('lint', function () {
     .pipe(eslint.failOnError());
 });
 
-gulp.task('default', ['concat-uglify-js', 'minify-css']);
-gulp.task('build', ['clean', 'lint', 'default']);
+
+gulp.task('default', ['watch']);
+gulp.task('build', ['lint', 'clean', 'concat-js']); // 'minify-css'
+
+gulp.task('watch', function () {
+    gulp.watch(config.lint.src, ['build']);
+});
