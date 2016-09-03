@@ -53,7 +53,7 @@
             self.fileList = [];
             return self.list().then(function(data) {
                 self.fileList = (data.result || []).map(function(file) {
-                    return new Item(file, self.currentPath);
+                    return new Item(file, self.currentPath, self.config);
                 });
                 self.buildTree(path);
                 self.onRefresh();

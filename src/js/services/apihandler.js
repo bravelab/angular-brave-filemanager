@@ -226,7 +226,7 @@
 
         ApiHandler.prototype.download = function(apiUrl, itemPath, toFilename, downloadByAjax, forceNewWindow) {
             var self = this;
-            var url = this.getUrl(apiUrl, itemPath);
+            var url = self.getUrl(apiUrl, itemPath);
 
             if (!downloadByAjax || forceNewWindow || !$window.saveAs) {
                 !$window.saveAs && $window.console.log('Your browser dont support ajax download, downloading by default');
