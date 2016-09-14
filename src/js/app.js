@@ -18,16 +18,12 @@
     $(window.document).on('contextmenu', '.main-navigation .table-files tr.item-list:has("td"), .item-list', function(e) {
         var menu = $('#context-menu');
 
-        if (e.pageX >= window.innerWidth - menu.width()) {
-            e.pageX -= menu.width();
-        }
-        if (e.pageY >= window.innerHeight - menu.height()) {
-            e.pageY -= menu.height();
-        }
+        var x = (e.pageX - $('.filemanager').offset().left) + 20;
+        var y = (e.pageY - $('.filemanager').offset().top) + parseInt(menu.height()/2);
 
         menu.hide().css({
-            left: e.pageX,
-            top: e.pageY
+            left: x,
+            top: y
         }).show();
         e.preventDefault();
     });
