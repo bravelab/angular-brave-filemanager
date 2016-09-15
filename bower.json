@@ -1,10 +1,6 @@
 {
   "name": "angular-brave-filemanager",
-<<<<<<< HEAD
   "version": "1.5.5",
-=======
-  "version": "1.5.4",
->>>>>>> ab1177f2c510810d4703df6020ea1352274e4a74
   "homepage": "http://bitbucket.org:sizeof/angular-brave-filemanager.git#readme",
   "authors": [
     "Nikodem Kler"
