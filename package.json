@@ -1,6 +1,6 @@
 {
   "name": "angular-brave-filemanager",
-  "version": "1.5.3",
+  "version": "1.5.5",
   "description": "A very smart filemanager to manage your files in the browser.",
   "main": "src/app.js",
   "scripts": {

@@ -9,8 +9,10 @@
 
             this.apiMiddleware = new ApiMiddleware(this.config);
             this.requesting = false;
+            this.loadMoreRequesting = false;
             this.fileList = [];
             this.currentPath = [];
+            this.nextMarker = '';
             this.history = [];
             this.error = '';
 
@@ -36,11 +38,19 @@
             if (this.error) {
                 return deferred.reject(data);
             }
+
+            // TODO nkler: temporary place - could be in service?
+            if (angular.isDefined(data.nextMarker) && data.nextMarker !== '') {
+                this.nextMarker = data.nextMarker;
+            } else {
+                this.nextMarker = '';
+            }
+
             return deferred.resolve(data);
         };
 
         FileNavigator.prototype.list = function() {
-            return this.apiMiddleware.list(this.currentPath, this.deferredHandler.bind(this));
+            return this.apiMiddleware.list(this.currentPath, this.deferredHandler.bind(this), this.nextMarker);
         };
 
         FileNavigator.prototype.refresh = function() {
@@ -61,7 +71,33 @@
                 self.requesting = false;
             });
         };
-        
+
+        FileNavigator.prototype.loadMore = function(nextMarker) {
+            this.nextMarker = nextMarker;
+            this.loadModeRefresh();
+        };
+        FileNavigator.prototype.loadModeRefresh = function() {
+            var self = this;
+            if (! self.currentPath.length) {
+                self.currentPath = this.config.basePath || [];
+            }
+            var path = self.currentPath.join('/');
+            self.loadMoreRequesting = true;
+
+            return self.list().then(function(data) {
+                var newList = (data.result || []).map(function(file) {
+                    return new Item(file, self.currentPath, self.config);
+                });
+
+                self.fileList = self.fileList.concat(newList);
+
+                self.buildTree(path);
+                self.onRefresh();
+            }).finally(function() {
+                self.loadMoreRequesting = false;
+            });
+        };
+
         FileNavigator.prototype.buildTree = function(path) {
             var flatNodes = [], selectedNode = {};
 
@@ -132,6 +168,7 @@
             this.currentPath = this.currentPath.slice(0, index + 1);
             this.refresh();
         };
+
 
         FileNavigator.prototype.fileNameExists = function(fileName) {
             return this.fileList.find(function(item) {
